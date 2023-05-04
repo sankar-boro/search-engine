@@ -41,7 +41,7 @@ impl Index {
     fn index_doc(&mut self, doc_id: usize, text: &str) {
         // Parse document into terms
         let terms: Vec<String> = text.split_whitespace().map(|t| t.to_lowercase()).collect();
-
+        let terms: Vec<String> = filter_stopwords(&terms);
         // Compute term frequencies
         let mut term_freqs = HashMap::new();
         for term in terms {
@@ -72,4 +72,22 @@ fn main() {
     for doc_id in results {
         println!("Doc {}", doc_id);
     }
+
+    // Version 1: get vector of pairs.
+    let all_data = Vec::from_iter(index.index.iter());
+    println!("{}", all_data.len());
+}
+
+
+fn filter_stopwords(tokens: &[String]) -> Vec<String> {
+    let stopwords = [
+                    "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in",
+                    "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the",
+                    "their", "then", "there", "these", "they", "this", "to", "was", "will", "with",
+                ];
+    tokens
+        .iter()
+        .filter(|t| !stopwords.contains(&t.as_str()))
+        .map(|t| t.to_lowercase())
+        .collect()
 }
